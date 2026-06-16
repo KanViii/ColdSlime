@@ -30,7 +30,6 @@ public class ExampleInput2 : MonoBehaviour
         _inputs.Moverment.Attack.performed += ctx => Attack();
         _inputs.Moverment.Rotation.performed += ctx => Rotation();
 
-        GameManager.instance.Hello();
     }
 
     // Update is called once per frame

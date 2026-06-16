@@ -23,27 +23,11 @@ public class CameraController : MonoBehaviour
         Cursor.visible = false;
     }
 
-
-    void Update()
-    {
-        if (Keyboard.current != null)
-        {
-            if (Keyboard.current.digit1Key.wasPressedThisFrame)
-            {
-                mode = CameraMode.FirstPerson;
-            }
-            if (Keyboard.current.digit3Key.wasPressedThisFrame)
-            {
-                mode = CameraMode.ThirdPerson;
-            }
-        }
-    }
-
     void LateUpdate()
     {
         if (target == null) return;
 
-        if (Mouse.current != null)
+        if (Mouse.current != null) //some device dont have mouse
         {
             Vector2 mouseDelata = Mouse.current.delta.ReadValue();
 
@@ -51,7 +35,7 @@ public class CameraController : MonoBehaviour
             pitch += mouseDelata.y * mouseSensitivity * Time.deltaTime;
         }
 
-        pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
+        pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);  //(value, min, max)
         yaw = Mathf.Clamp(yaw, yawMinMax.x, yawMinMax.y);
 
         if (mode == CameraMode.FirstPerson)
