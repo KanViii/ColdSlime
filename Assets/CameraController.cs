@@ -23,6 +23,22 @@ public class CameraController : MonoBehaviour
         Cursor.visible = false;
     }
 
+
+    void Update()
+    {
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.digit1Key.wasPressedThisFrame)
+            {
+                mode = CameraMode.FirstPerson;
+            }
+            if (Keyboard.current.digit3Key.wasPressedThisFrame)
+            {
+                mode = CameraMode.ThirdPerson;
+            }
+        }
+    }
+
     void LateUpdate()
     {
         if (target == null) return;

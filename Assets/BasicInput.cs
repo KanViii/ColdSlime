@@ -118,6 +118,15 @@ public partial class @BasicInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Rotation"",
+                    ""type"": ""Button"",
+                    ""id"": ""401ea4a6-6cef-4cc0-8a91-90e2a3f53574"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -197,6 +206,17 @@ public partial class @BasicInput: IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a4da3980-b250-4f5e-881c-f977f213b3ee"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -208,6 +228,7 @@ public partial class @BasicInput: IInputActionCollection2, IDisposable
         m_Moverment_Jump = m_Moverment.FindAction("Jump", throwIfNotFound: true);
         m_Moverment_Attack = m_Moverment.FindAction("Attack", throwIfNotFound: true);
         m_Moverment_Move = m_Moverment.FindAction("Move", throwIfNotFound: true);
+        m_Moverment_Rotation = m_Moverment.FindAction("Rotation", throwIfNotFound: true);
     }
 
     ~@BasicInput()
@@ -291,6 +312,7 @@ public partial class @BasicInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Moverment_Jump;
     private readonly InputAction m_Moverment_Attack;
     private readonly InputAction m_Moverment_Move;
+    private readonly InputAction m_Moverment_Rotation;
     /// <summary>
     /// Provides access to input actions defined in input action map "Moverment".
     /// </summary>
@@ -314,6 +336,10 @@ public partial class @BasicInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Moverment/Move".
         /// </summary>
         public InputAction @Move => m_Wrapper.m_Moverment_Move;
+        /// <summary>
+        /// Provides access to the underlying input action "Moverment/Rotation".
+        /// </summary>
+        public InputAction @Rotation => m_Wrapper.m_Moverment_Rotation;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -349,6 +375,9 @@ public partial class @BasicInput: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
+            @Rotation.started += instance.OnRotation;
+            @Rotation.performed += instance.OnRotation;
+            @Rotation.canceled += instance.OnRotation;
         }
 
         /// <summary>
@@ -369,6 +398,9 @@ public partial class @BasicInput: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
+            @Rotation.started -= instance.OnRotation;
+            @Rotation.performed -= instance.OnRotation;
+            @Rotation.canceled -= instance.OnRotation;
         }
 
         /// <summary>
@@ -430,5 +462,12 @@ public partial class @BasicInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMove(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Rotation" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRotation(InputAction.CallbackContext context);
     }
 }

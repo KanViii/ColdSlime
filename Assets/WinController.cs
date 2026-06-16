@@ -3,13 +3,13 @@ using System.Collections;
 
 public class WinController : MonoBehaviour
 {
-    private bool hasWon = false;
+    // private bool hasWon = false;
     
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            hasWon = true;
+            // hasWon = true;
             Debug.Log("You won! Couting 3s down to exit ...");
             StartCoroutine(WinRoutine());
         }

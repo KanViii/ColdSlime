@@ -28,22 +28,19 @@ public class ExampleInput2 : MonoBehaviour
     {
         _inputs.Moverment.Jump.performed += ctx => Jump();
         _inputs.Moverment.Attack.performed += ctx => Attack();
+        _inputs.Moverment.Rotation.performed += ctx => Rotation();
 
         GameManager.instance.Hello();
     }
-
-    
-
-
 
     // Update is called once per frame
     void Update()
     {
         _inputsMove = _inputs.Moverment.Move.ReadValue<Vector2>();
 
-        Debug.Log($"move {_inputsMove}");
-
-        transform.Translate(_inputsMove.x * Time.deltaTime * movementSpeed, 0, _inputsMove.y * Time.deltaTime * movementSpeed);
+        // Debug.Log($"move {_inputsMove}");
+        float scale = Time.deltaTime * movementSpeed;
+        transform.Translate(_inputsMove.x * scale, 0, _inputsMove.y * scale);
 
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.75f, 1 <<LayerMask.NameToLayer("Default")))
         {
@@ -67,5 +64,10 @@ public class ExampleInput2 : MonoBehaviour
     public void Attack()
     {
         Debug.Log("Attack");
+    }
+
+    public void Rotation()
+    {
+        transform.Rotate(0, 90, 0);
     }
 }
