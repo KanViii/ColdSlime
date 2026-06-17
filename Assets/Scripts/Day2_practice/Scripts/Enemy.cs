@@ -4,15 +4,34 @@ using System.Collections;
 
 public class Enemy : UnitBase
 {
-    // Đây là "tiếng chuông" báo hiệu khi quái chết
     public static event Action<Enemy> OnAnyEnemyDied;
 
     public float attackRange = 1f; 
     private bool isKnockedBack = false;
+    private Animator animator; 
+    public AudioClip jumpAudio;
+
+    public AudioClip hitAudio;
+
+    public AudioClip dieAudio;
+    public AudioSource audioSource;
+
+    public GameObject diePrefab;
+    public GameObject hitPrefab; // Biến chứa hiệu ứng nhận sát thương cho Enemy
+
+    private void Awake()
+    {
+        animator = GetComponentInChildren<Animator>();
+    }
 
     private void OnEnable()
     {
         isKnockedBack = false;
+        
+        if (audioSource != null && jumpAudio != null)
+        {
+            audioSource.PlayOneShot(jumpAudio);
+        }
     }
 
     public void CustomUpdate()
@@ -32,45 +51,61 @@ public class Enemy : UnitBase
 
         if (Vector3.Distance(transform.position, Player.Instance.transform.position) > 10f)
         {
-            return; // Đứng yên nếu cách xa hơn 10 đơn vị
+            animator.SetBool("isWalking", false);
+            // Debug.Log("Enemy stop walking");
+            return;
         }
-
-        // Debug.Log("Enemy see Player");
-        Vector3 direction = (Player.Instance.transform.position - transform.position).normalized;
-        direction.y = 0;
-
-        transform.Translate(-direction * myStats.moveSpeed * Time.deltaTime, Space.World);
-
-        if (direction != Vector3.zero)
+        else
         {
-            transform.forward = -direction;
-        }
+            animator.SetBool("isWalking", true);
+        
+            // Debug.Log("Enemy see Player");
+            Vector3 direction = (Player.Instance.transform.position - transform.position).normalized;
+            direction.y = 0;
 
+            transform.Translate(-direction * myStats.moveSpeed * Time.deltaTime, Space.World);
+
+            if (direction != Vector3.zero)
+            {
+                transform.forward = -direction;
+            }
+        }
         // HandleAttack();
     }
 
-    void HandleAttack()
-    {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange);
+    // void HandleAttack()
+    // {
+    //     Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange);
         
-        foreach (Collider hit in hitColliders)
-        {
-            Player player = hit.GetComponent<Player>();
+    //     foreach (Collider hit in hitColliders)
+    //     {
+    //         Player player = hit.GetComponent<Player>();
             
-            if (player != null) 
-            {
-                Debug.Log("Enemy Attack!");
-                player.TakeDamage(myStats.attackDamage);
-            }
-        }
+    //         if (player != null) 
+    //         {
+    //             Debug.Log("Enemy Attack!");
+    //             player.TakeDamage(myStats.attackDamage);
+    //         }
+    //     }
     
-    }
+    // }
 
     public override void TakeDamage(float damage)
     {
         currentHealth -= damage;
 
         Debug.Log($"{myStats.unitName} is attacked! Remaining HP: {Mathf.Max(0,currentHealth)}");
+
+        if (hitPrefab != null)
+        {
+            GameObject hitEffect = Instantiate(hitPrefab, transform.position + new Vector3(0, 1f, 0), Quaternion.identity);
+            Destroy(hitEffect, 1f);
+        }
+
+        if (audioSource != null && hitAudio != null)
+        {
+            audioSource.PlayOneShot(hitAudio);
+        }
 
         if (currentHealth <= 0) 
         {
@@ -116,7 +151,14 @@ public class Enemy : UnitBase
 
     protected override void Die()
     {
-        // Invoke WaveManager: "Tôi chết rồi!"
+        GameObject dieEffect = Instantiate(diePrefab, this.transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
+        Destroy(dieEffect, 3f);
+
+        if (dieAudio != null)
+        {
+            AudioSource.PlayClipAtPoint(dieAudio, transform.position);
+        }
+
         OnAnyEnemyDied?.Invoke(this);
         gameObject.SetActive(false);
     }

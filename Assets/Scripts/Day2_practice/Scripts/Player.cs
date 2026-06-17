@@ -4,8 +4,18 @@ using System;
 
 public class Player : UnitBase
 {
+
+    // public GameObject attackPrefab;
     public static event Action OnPlayerDied;
+
+    public AudioClip audioDie;
+    public AudioClip audioWin;
+    public GameObject hitPrefab; 
+
     public static Player Instance { get; private set; }
+
+
+
     private void Awake()
     {
         Instance = this;
@@ -44,7 +54,7 @@ public class Player : UnitBase
         
         Vector3 movement = new Vector3(moveX, 0, moveZ).normalized;
 
-        transform.Translate(movement * myStats.moveSpeed * Time.deltaTime, Space.World);
+        transform.Translate(movement * myStats.moveSpeed * Time.deltaTime, Space.Self);
     }
 
     public override void TakeDamage(float damage)
@@ -52,6 +62,13 @@ public class Player : UnitBase
         currentHealth -= damage;
 
         Debug.Log($"{myStats.unitName} is attacked! Remaining HP: {Mathf.Max(0,currentHealth)}");
+
+        
+        if (hitPrefab != null)
+        {
+            GameObject hitEffect = Instantiate(hitPrefab, transform.position + new Vector3(0, 1f, 0), Quaternion.identity);
+            Destroy(hitEffect, 1f); 
+        }
 
         if (currentHealth <= 0) Die();
     }
@@ -61,6 +78,8 @@ public class Player : UnitBase
 
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
+            // GameObject attackEffect = Instantiate(attackPrefab, this.transform.position, Quaternion.identity);
+            // Destroy(attackEffect, 0.2f);
             Debug.Log("Player Attack!");
             AttackEnemiesNearby();
         }
@@ -84,8 +103,14 @@ public class Player : UnitBase
 
     protected override void Die()
     {
+        if (audioDie != null)
+        {
+            AudioSource.PlayClipAtPoint(audioDie, transform.position);
+        }
+        
         base.Die();
         Debug.Log("--- GAME OVER! LOSER ^^ ---");
+
         OnPlayerDied?.Invoke();
     }
 }

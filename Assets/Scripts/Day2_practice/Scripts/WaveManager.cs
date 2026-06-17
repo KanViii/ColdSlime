@@ -95,6 +95,11 @@ public class WaveManager : MonoBehaviour
         if (isSpawningFinished && activeEnemies.Count <= 0)
         {
             Debug.Log("--- YOU WIN THIS WAVE ! ---");
+            if (Player.Instance != null && Player.Instance.audioWin != null)
+            {
+                // Dùng PlayClipAtPoint để phát nhạc chiến thắng
+                AudioSource.PlayClipAtPoint(Player.Instance.audioWin, Player.Instance.transform.position);
+            }
         }
     }
 
