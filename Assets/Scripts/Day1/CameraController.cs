@@ -10,7 +10,6 @@ public class CameraController : MonoBehaviour
     public Transform target;
     public float mouseSensitivity = 10f;
     public Vector2 pitchMinMax = new Vector2(-40f, 85f);
-    public Vector2 yawMinMax = new Vector2(-360f, 360f);
 
     [Header("Third Person Settings")]
     public float distanceFromTarget = 5f;
@@ -19,8 +18,8 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.None; // Mở khóa để chuột tự do
+        Cursor.visible = true; // Hiển thị chuột trên màn hình
     }
 
 
@@ -43,7 +42,8 @@ public class CameraController : MonoBehaviour
     {
         if (target == null) return;
 
-        if (Mouse.current != null)
+        // Chỉ xoay Camera khi người dùng NHẤN GIỮ chuột phải
+        if (Mouse.current != null && Mouse.current.rightButton.isPressed)
         {
             Vector2 mouseDelata = Mouse.current.delta.ReadValue();
 
@@ -52,7 +52,6 @@ public class CameraController : MonoBehaviour
         }
 
         pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
-        yaw = Mathf.Clamp(yaw, yawMinMax.x, yawMinMax.y);
         target.rotation = Quaternion.Euler(0, yaw, 0);
 
         if (mode == CameraMode.FirstPerson)

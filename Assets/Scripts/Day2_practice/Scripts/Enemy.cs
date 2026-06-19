@@ -17,7 +17,11 @@ public class Enemy : UnitBase
     public AudioSource audioSource;
 
     public GameObject diePrefab;
-    public GameObject hitPrefab; // Biến chứa hiệu ứng nhận sát thương cho Enemy
+    public GameObject hitPrefab;
+    public GameObject surprisePrefab;
+
+    private float attackCooldown = 0.5f;
+    private float attackTimer = 0f;
 
     private void Awake()
     {
@@ -57,6 +61,14 @@ public class Enemy : UnitBase
         }
         else
         {
+            if (!animator.GetBool("isWalking"))
+            {
+                if (surprisePrefab != null)
+                {
+                    GameObject surprise = Instantiate(surprisePrefab, transform.position + new Vector3(0, 2.5f, 0), Quaternion.identity, transform);
+                    Destroy(surprise, 0.35f);
+                }
+            }
             animator.SetBool("isWalking", true);
         
             // Debug.Log("Enemy see Player");
@@ -70,25 +82,37 @@ public class Enemy : UnitBase
                 transform.forward = -direction;
             }
         }
-        // HandleAttack();
+        HandleAttack();
     }
 
-    // void HandleAttack()
-    // {
-    //     Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange);
+    void HandleAttack()
+    {
+        if (attackTimer > 0)
+        {
+            attackTimer -= Time.deltaTime;
+            return;
+        }
+
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange);
+        bool didAttack = false;
         
-    //     foreach (Collider hit in hitColliders)
-    //     {
-    //         Player player = hit.GetComponent<Player>();
+        foreach (Collider hit in hitColliders)
+        {
+            Player player = hit.GetComponent<Player>();
             
-    //         if (player != null) 
-    //         {
-    //             Debug.Log("Enemy Attack!");
-    //             player.TakeDamage(myStats.attackDamage);
-    //         }
-    //     }
+            if (player != null) 
+            {
+                // Debug.Log("Enemy Attack!");
+                player.TakeDamage(myStats.attackDamage);
+                didAttack = true; 
+            }
+        }
     
-    // }
+        if (didAttack)
+        {
+            attackTimer = attackCooldown;
+        }
+    }
 
     public override void TakeDamage(float damage)
     {
@@ -96,11 +120,11 @@ public class Enemy : UnitBase
 
         Debug.Log($"{myStats.unitName} is attacked! Remaining HP: {Mathf.Max(0,currentHealth)}");
 
-        if (hitPrefab != null)
-        {
-            GameObject hitEffect = Instantiate(hitPrefab, transform.position + new Vector3(0, 1f, 0), Quaternion.identity);
-            Destroy(hitEffect, 1f);
-        }
+        // if (hitPrefab != null)
+        // {
+        //     GameObject hitEffect = Instantiate(hitPrefab, transform.position + new Vector3(0, 1f, 0), Quaternion.identity);
+        //     Destroy(hitEffect, 1f);
+        // }
 
         if (audioSource != null && hitAudio != null)
         {
@@ -127,7 +151,7 @@ public class Enemy : UnitBase
         knockbackDirection.y = 0;
         
         float knockbackDistance = 2f;
-        float jumpHeight = 1.5f;
+        float jumpHeight = 2.5f;
         float duration = 0.3f;
         Vector3 targetPos = startPos + knockbackDirection * knockbackDistance;
 
@@ -156,7 +180,7 @@ public class Enemy : UnitBase
 
         if (dieAudio != null)
         {
-            AudioSource.PlayClipAtPoint(dieAudio, transform.position);
+            AudioSource.PlayClipAtPoint(hitAudio, transform.position);
         }
 
         OnAnyEnemyDied?.Invoke(this);

@@ -16,11 +16,15 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
-        for (int i = 0; i < poolSize; i++)
+        if (enemyPrefab != null)
         {
-            GameObject obj = Instantiate(enemyPrefab);
-            obj.SetActive(false); 
-            enemyPool.Add(obj);
+            for (int i = 0; i < poolSize; i++)
+            {
+                GameObject obj = Instantiate(enemyPrefab);
+                obj.name = enemyPrefab.name;
+                obj.SetActive(false); 
+                enemyPool.Add(obj);
+            }
         }
 
         Enemy.OnAnyEnemyDied += HandleEnemyDeath;
@@ -52,12 +56,25 @@ public class WaveManager : MonoBehaviour
     }
 
 
-    GameObject GetEnemyFromPool()
+    GameObject GetEnemy(string prefabName)
     {
         foreach (GameObject enemy in enemyPool)
         {
-            if (!enemy.activeInHierarchy)  return enemy;
+            if (!enemy.activeInHierarchy && enemy.name.StartsWith(prefabName))  
+                return enemy;
         }
+
+        // Nếu pool hết hoặc không có loại này trong pool, tự động load và tạo thêm
+        GameObject prefab = Resources.Load<GameObject>($"Prefabs/Enemy/{prefabName}");
+        if (prefab != null)
+        {
+            GameObject newObj = Instantiate(prefab);
+            newObj.name = prefabName;
+            newObj.SetActive(false);
+            enemyPool.Add(newObj);
+            return newObj;
+        }
+
         return null; 
     }
 
@@ -66,11 +83,44 @@ public class WaveManager : MonoBehaviour
         Debug.Log("--- WAVE STARTED ! ---");
         isSpawningFinished = false;
 
-        foreach (UnitStatsSO enemyStats in waveData.enemiesToSpawn)
+        LevelData currentLevelData = null;
+        if (LevelManager.Instance != null)
         {
-            yield return new WaitForSeconds(Random.Range(waveData.minspawnInterval, waveData.maxspawInterval));
+            currentLevelData = LevelManager.Instance.GetCurrentLevelData();
+        }
 
-            GameObject enemy = GetEnemyFromPool();
+        int spawnCount = 0;
+        List<string> prefabsToSpawn = new List<string>();
+
+        if (currentLevelData != null)
+        {
+            spawnCount = currentLevelData.spawnCount;
+            if (LevelManager.Instance != null)
+            {
+                int alreadyKilled = LevelManager.Instance.EnemiesKilledThisLevel;
+                spawnCount = Mathf.Max(0, spawnCount - alreadyKilled);
+            }
+            prefabsToSpawn = currentLevelData.monsterPrefabNames;
+        }
+        else if (waveData != null)
+        {
+            spawnCount = waveData.enemiesToSpawn.Count;
+            if (enemyPrefab != null) prefabsToSpawn.Add(enemyPrefab.name);
+        }
+
+        for (int i = 0; i < spawnCount; i++)
+        {
+            float minInterval = waveData != null ? waveData.minspawnInterval : 1f;
+            float maxInterval = waveData != null ? waveData.maxspawInterval : 3f;
+            yield return new WaitForSeconds(Random.Range(minInterval, maxInterval));
+
+            string chosenPrefabName = "Enemy"; 
+            if (prefabsToSpawn != null && prefabsToSpawn.Count > 0)
+            {
+                chosenPrefabName = prefabsToSpawn[Random.Range(0, prefabsToSpawn.Count)];
+            }
+
+            GameObject enemy = GetEnemy(chosenPrefabName);
             if (enemy != null)
             {
                 enemy.transform.position = Player.Instance.transform.position + new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
@@ -83,11 +133,16 @@ public class WaveManager : MonoBehaviour
         }
         
         isSpawningFinished = true;
+
+        if (spawnCount <= 0)
+        {
+            HandleEnemyDeath(null);
+        }
     }
 
     void HandleEnemyDeath(Enemy enemy)
     {
-        if (activeEnemies.Contains(enemy))
+        if (enemy != null && activeEnemies.Contains(enemy))
             activeEnemies.Remove(enemy);
 
         Debug.Log($"An enemy was died! Remaining in active: {activeEnemies.Count}");
@@ -99,6 +154,44 @@ public class WaveManager : MonoBehaviour
             {
                 // Dùng PlayClipAtPoint để phát nhạc chiến thắng
                 AudioSource.PlayClipAtPoint(Player.Instance.audioWin, Player.Instance.transform.position);
+            }
+
+            // Tự động chuyển qua level tiếp theo
+            if (LevelManager.Instance != null)
+            {
+                int nextLevel = LevelManager.Instance.CurrentLevel + 1;
+                LevelData nextLevelData = LevelManager.Instance.LevelConfigs.Find(l => l.level == nextLevel);
+                
+                if (nextLevelData != null)
+                {
+                    Debug.Log($"Tiến hành Auto Load Level {nextLevel}...");
+                    LevelManager.Instance.SetLevel(nextLevel);
+                    
+                    // Lấy tên scene hiện tại
+                    string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+                    
+                    // Nếu sceneName của level tiếp theo khác với scene hiện hành -> Load Scene mới
+                    if (!string.IsNullOrEmpty(nextLevelData.sceneName) && nextLevelData.sceneName != currentScene)
+                    {
+                        UnityEngine.SceneManagement.SceneManager.LoadScene(nextLevelData.sceneName);
+                    }
+                    else
+                    {
+                        // Vẫn ở chung một scene -> Chạy tiếp đợt quái tiếp theo luôn
+                        if (spawnCoroutine != null) StopCoroutine(spawnCoroutine);
+                        spawnCoroutine = StartCoroutine(SpawnWaveRoutine());
+                    }
+                }
+                else
+                {
+                    Debug.Log("Chúc mừng! Bạn đã hoàn thành tất cả các level trong config!");
+                }
+            }
+            else
+            {
+                // Fallback nếu không có LevelManager (vòng lặp vô tận WaveManager cũ)
+                if (spawnCoroutine != null) StopCoroutine(spawnCoroutine);
+                spawnCoroutine = StartCoroutine(SpawnWaveRoutine());
             }
         }
     }

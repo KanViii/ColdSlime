@@ -1,0 +1,4 @@
+Level,SceneName,SpawnCount,MonsterPrefabNames
+1,ugly_enemy,2,Enemy
+2,ugly_enemy,3,Enemy2
+3,ugly_enemy,4,Enemy

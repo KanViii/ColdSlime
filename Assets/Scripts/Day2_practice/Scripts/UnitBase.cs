@@ -4,6 +4,7 @@ public class UnitBase : MonoBehaviour
 {
     public UnitStatsSO myStats;
     protected float currentHealth;
+    public float CurrentHealth => currentHealth; // Getter để UI có thể đọc máu
 
     void Start()
     {

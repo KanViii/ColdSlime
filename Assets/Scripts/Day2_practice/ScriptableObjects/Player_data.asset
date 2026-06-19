@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitStatsSO
   _unitName: Player
   _maxHealth: 200
-  _moveSpeed: 10
+  _moveSpeed: 15
   _attackDamage: 20
   modelPrefab: {fileID: 0}

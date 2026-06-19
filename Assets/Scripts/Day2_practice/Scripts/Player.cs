@@ -7,6 +7,7 @@ public class Player : UnitBase
 
     // public GameObject attackPrefab;
     public static event Action OnPlayerDied;
+    public static event Action<float, float> OnPlayerHealthChanged; // Sự kiện cập nhật máu (current, max)
 
     public AudioClip audioDie;
     public AudioClip audioWin;
@@ -60,6 +61,8 @@ public class Player : UnitBase
     public override void TakeDamage(float damage)
     {
         currentHealth -= damage;
+
+        OnPlayerHealthChanged?.Invoke(currentHealth, myStats.maxHealth);
 
         Debug.Log($"{myStats.unitName} is attacked! Remaining HP: {Mathf.Max(0,currentHealth)}");
 

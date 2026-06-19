@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_data
   m_EditorClassIdentifier: Assembly-CSharp::UnitStatsSO
   _unitName: Enemy
-  _maxHealth: 50
+  _maxHealth: 40
   _moveSpeed: 2
-  _attackDamage: 2
+  _attackDamage: 5
   modelPrefab: {fileID: 0}
