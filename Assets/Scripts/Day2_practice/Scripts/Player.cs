@@ -40,8 +40,14 @@ public class Player : UnitBase
         float moveX = 0f;
         float moveZ = 0f;
 
-        if (Keyboard.current != null)
+        if (InputManager.Instance != null)
         {
+            moveX = InputManager.Instance.MoveInput.x;
+            moveZ = InputManager.Instance.MoveInput.y;
+        }
+        else if (Keyboard.current != null)
+        {
+            // Fallback if InputManager is not in scene
             // Z axis - up/down
             if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) moveZ += 1f;
             if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) moveZ -= 1f;
@@ -50,8 +56,6 @@ public class Player : UnitBase
             if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) moveX += 1f;
             if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) moveX -= 1f;
         }
-        
-        
         
         Vector3 movement = new Vector3(moveX, 0, moveZ).normalized;
 
@@ -78,19 +82,21 @@ public class Player : UnitBase
 
     void HandleAttack()
     {
+        bool attack = false;
+        if (InputManager.Instance != null) attack = InputManager.Instance.AttackTriggered;
+        else if (Mouse.current != null) attack = Mouse.current.leftButton.wasPressedThisFrame;
 
-        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        if (attack)
         {
             // GameObject attackEffect = Instantiate(attackPrefab, this.transform.position, Quaternion.identity);
             // Destroy(attackEffect, 0.2f);
-            Debug.Log("Player Attack!");
-            AttackEnemiesNearby();
-        }
+        Debug.Log("Player Attack!");
+        AttackEnemiesNearby();
+    }
     }
 
     void AttackEnemiesNearby()
     {
-        // Tạo một vòng tròn ảo quanh Player để quét xem có ai đứng gần không
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange);
         
         foreach (Collider hit in hitColliders)

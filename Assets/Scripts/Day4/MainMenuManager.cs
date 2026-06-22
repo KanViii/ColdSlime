@@ -59,8 +59,6 @@ public class MainMenuManager : MonoBehaviour
             SceneManager.LoadScene(1);
         }
 
-        Debug.Log("destroy main menu");
-
         CanvasManager.Instance.removeUI(this);
     }
 }

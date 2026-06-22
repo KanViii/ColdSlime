@@ -5,8 +5,9 @@ public class PlayManager : MonoBehaviour
 {
     [SerializeField] private Slider HPSlier;
     [SerializeField] private Button pauseButton;
+    [SerializeField] private Button attackButton;
     [SerializeField] private Text scoreText; 
-    [SerializeField] private Text levelText; // <--- Thêm dòng này để tham chiếu đến UI Text hiện Level
+    [SerializeField] private Text levelText; 
 
 
     private bool isPaused = false;
@@ -87,15 +88,19 @@ public class PlayManager : MonoBehaviour
         {
             int currentLevel = LevelManager.Instance.CurrentLevel;
             int maxLevel = LevelManager.Instance.LevelConfigs.Count;
-            levelText.text = "Level " + currentLevel + "/" + maxLevel;
+            levelText.text = currentLevel + "/" + maxLevel;
         }
     }
 
     void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        bool pause = false;
+        if (InputManager.Instance != null) pause = InputManager.Instance.PauseTriggered;
+        else if (Keyboard.current != null) pause = Keyboard.current.escapeKey.wasPressedThisFrame;
+
+        if (pause)
         {
-            if (isPaused)
+            if (!isPaused)
             {
                 OnClickPauseButton(); 
             }
@@ -109,24 +114,52 @@ public class PlayManager : MonoBehaviour
 
     private void OnClickPauseButton()
     {
-        isPaused = !isPaused; 
+        if (isPaused) return; // Tránh gọi nhiều lần
 
-        if (isPaused)
+        isPaused = true; 
+        Time.timeScale = 0f; 
+        
+        uiPause = CanvasManager.Instance.LoadPrefabs<PauseManager>("UIPause");
+        if (uiPause != null)
         {
-            Time.timeScale = 0f; 
-            uiPause = CanvasManager.Instance.LoadPrefabs<PauseManager>("UIPause");
+            uiPause.OnContinueClicked += ResumeGame;
+            uiPause.OnExitClicked += ExitToMenu;
+            
             CanvasManager.Instance.AddUI(uiPause);
-            Debug.Log("Game Paused!");
         }
-        else
+        
+        Debug.Log("Game Paused!");
+    }
+
+    private void ResumeGame()
+    {
+        if (!isPaused) return;
+
+        isPaused = false;
+        Time.timeScale = 1f; 
+
+        if (uiPause != null)
         {
-            Time.timeScale = 1f; 
-            if (uiPause != null)
-            {
-                CanvasManager.Instance.removeUI(uiPause);
-                uiPause = null; 
-            }
-            Debug.Log("Game Resumed!");
+            uiPause.OnContinueClicked -= ResumeGame;
+            uiPause.OnExitClicked -= ExitToMenu;
+
+            CanvasManager.Instance.removeUI(uiPause);
+            uiPause = null; 
         }
+        Debug.Log("Game Resumed!");
+    }
+
+    private void ExitToMenu()
+    {
+        Time.timeScale = 1f;
+
+        if (uiPause != null)
+        {
+            CanvasManager.Instance.removeUI(uiPause);
+            uiPause = null;
+        }
+        CanvasManager.Instance.removeUI(this); 
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Main");
     }
 }

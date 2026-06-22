@@ -17,7 +17,6 @@ public static class ConfigLoader
         {
             case ConfigSourceType.ScriptableObject:
                 return LoadFromScriptableObject(scriptableObjectRef);
-            // Tuỳ chỉnh thêm các case CSV, JSON nếu cần gọi trực tiếp từ đây
         }
         return null;
     }
@@ -44,7 +43,7 @@ public static class ConfigLoader
         }
 
         string[] lines = File.ReadAllLines(fullPath);
-        for (int i = 1; i < lines.Length; i++) // Bỏ qua dòng tiêu đề (header)
+        for (int i = 1; i < lines.Length; i++) 
         {
             string line = lines[i];
             if (string.IsNullOrWhiteSpace(line)) continue;
@@ -58,7 +57,7 @@ public static class ConfigLoader
                 data.sceneName = columns[1].Trim();
                 int.TryParse(columns[2], out data.spawnCount);
                 
-                string[] prefabs = columns[3].Split(';'); // Nếu có nhiều quái thì phân tách bằng dấu chấm phẩy
+                string[] prefabs = columns[3].Split(';'); 
                 data.monsterPrefabNames = new List<string>();
                 foreach (string p in prefabs)
                 {

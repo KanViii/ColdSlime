@@ -24,7 +24,6 @@ public static class SaveSystem
         Debug.Log($"[SaveSystem] Saved Level {level} to PlayerPrefs.");
     }
 
-    // Load from PlayerPrefs
     public static GameSaveData LoadFromPlayerPrefs(int defaultLevel = 1, int defaultScore = 0, int defaultEnemies = 0)
     {
         if (PlayerPrefs.HasKey(PlayerPrefsLevelKey))
@@ -39,7 +38,7 @@ public static class SaveSystem
         return new GameSaveData { currentLevel = defaultLevel, score = defaultScore, enemiesKilled = defaultEnemies };
     }
 
-    // Save to custom JSON file
+
     public static void SaveToJson(int level, int score, int enemiesKilled)
     {
         try

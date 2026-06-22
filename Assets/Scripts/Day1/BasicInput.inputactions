@@ -34,9 +34,45 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "795e44e6-20d4-48b0-9695-1fc677f74f53",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LookDelta",
+                    "type": "Value",
+                    "id": "743f04d0-2d27-4c4f-a003-3d61fa7ea3c6",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Camera1",
+                    "type": "Button",
+                    "id": "1ee576bd-b46c-460b-a2b1-16256f57b2f0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Camera3",
+                    "type": "Button",
+                    "id": "70b0d27d-c59c-4337-b6a5-c8e3e32e0b17",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Rotation",
                     "type": "Button",
-                    "id": "401ea4a6-6cef-4cc0-8a91-90e2a3f53574",
+                    "id": "3583d886-2b68-4b5a-aa0d-76b4463b73c1",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -59,6 +95,17 @@
                     "name": "",
                     "id": "fcab773d-0cb5-4879-a438-e22891601319",
                     "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b370bf1c-5452-4c1e-86de-bdf54f363245",
+                    "path": "<Touchscreen>/primaryTouch/tap",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -123,7 +170,73 @@
                 },
                 {
                     "name": "",
-                    "id": "a4da3980-b250-4f5e-881c-f977f213b3ee",
+                    "id": "4ccbabfe-82d1-41f2-8538-37459ee756f4",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3325c85d-6681-40e4-8f9a-b4da37069762",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7e854bf5-988c-4284-b5b5-8690bcd0e2a0",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LookDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "72eae413-a399-4508-9daa-9e25f558637a",
+                    "path": "<Touchscreen>/primaryTouch/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LookDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fb631426-d3f5-462e-a952-110738e54842",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Camera1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f4319fa2-a157-4d03-aaca-540787e5605e",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Camera3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "89922bb1-8dc6-414d-9751-f3202c45655d",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",

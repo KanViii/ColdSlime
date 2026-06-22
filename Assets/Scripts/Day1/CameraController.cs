@@ -25,27 +25,38 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        if (Keyboard.current != null)
+        bool cam1 = false;
+        bool cam3 = false;
+        
+        if (InputManager.Instance != null)
         {
-            if (Keyboard.current.digit1Key.wasPressedThisFrame)
-            {
-                mode = CameraMode.FirstPerson;
-            }
-            if (Keyboard.current.digit3Key.wasPressedThisFrame)
-            {
-                mode = CameraMode.ThirdPerson;
-            }
+            cam1 = InputManager.Instance.Camera1Triggered;
+            cam3 = InputManager.Instance.Camera3Triggered;
         }
+        else if (Keyboard.current != null)
+        {
+            cam1 = Keyboard.current.digit1Key.wasPressedThisFrame;
+            cam3 = Keyboard.current.digit3Key.wasPressedThisFrame;
+        }
+
+        if (cam1) mode = CameraMode.FirstPerson;
+        if (cam3) mode = CameraMode.ThirdPerson;
     }
 
     void LateUpdate()
     {
         if (target == null) return;
 
-        // Chỉ xoay Camera khi người dùng NHẤN GIỮ chuột phải
-        if (Mouse.current != null && Mouse.current.rightButton.isPressed)
+        bool isRotating = false;
+        if (InputManager.Instance != null) isRotating = InputManager.Instance.IsRotating;
+        else if (Mouse.current != null) isRotating = Mouse.current.rightButton.isPressed;
+
+        // Chỉ xoay Camera khi người dùng NHẤN GIỮ chuột phải (hoặc nhấn giữ nút xoay trên màn hình)
+        if (isRotating)
         {
-            Vector2 mouseDelata = Mouse.current.delta.ReadValue();
+            Vector2 mouseDelata = Vector2.zero;
+            if (InputManager.Instance != null) mouseDelata = InputManager.Instance.LookDelta;
+            else if (Mouse.current != null) mouseDelata = Mouse.current.delta.ReadValue();
 
             yaw += mouseDelata.x * mouseSensitivity * Time.deltaTime;
             pitch -= mouseDelata.y * mouseSensitivity * Time.deltaTime;
