@@ -29,12 +29,12 @@ public class InputManager : MonoBehaviour
 
     private void OnEnable()
     {
-        basicInput.Enable();
+        basicInput?.Enable();
     }
 
     private void OnDisable()
     {
-        basicInput.Disable();
+        basicInput?.Disable();
     }
 
     private void Update()

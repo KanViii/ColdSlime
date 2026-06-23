@@ -57,4 +57,12 @@ public class CanvasManager : MonoBehaviour
             Destroy(ui.gameObject);
         }
     }
+
+    public void ClearAllUI()
+    {
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
 }

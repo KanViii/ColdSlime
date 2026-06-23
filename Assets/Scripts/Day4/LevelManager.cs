@@ -42,6 +42,13 @@ public class LevelManager : MonoBehaviour
 
     private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
     {
+        Time.timeScale = 1f;
+
+        if (CanvasManager.Instance != null)
+        {
+            CanvasManager.Instance.ClearAllUI();
+        }
+
         string currentScene = scene.name;
         
         if (currentScene == "Main")
