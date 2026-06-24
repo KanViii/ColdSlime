@@ -1,0 +1,152 @@
+Lậm quá nhiều vào một đơn vị kiến thức
+
+1. Unity Engine là gì?
+--> sử dụng rộng rãi, các vấn đề phổ biến đã được giải quyết và có hướng dẫn
+công cụ phổ biến, dễ làm 
+
+2. Scene, GameObj, Component là gì?
+--> Scene: wall, chứa nhiều GameObj
+GameObj gồm nhiều Component
+Component: tự viết và làm sẵn
+
+3. Vòng đời MonoBehavour?
+--> Xác định xem bà giỏi hay hong ^^
+Vòng đời của 1 Component
+Bug liên quan đến luồng, Unity Document (Event function execution order)
+
+4. Làm sao lấy Input từ player?
+--> <New> input system (convert đồng bộ từ nhiều môi trường)
+
+5. Làm sao để di chuyển một GameObj bằng code?
+
+6. Collider là gì? aka hình dạng vật lý
+--> tính chất Unity làm sẵn, check xem obj có đụng/chứa với obj khác hay không
+
+7. Raycast? aka 
+--> check xem có vật cản trong tia hay không
+
+
+8. RigidBody? aka tính chất vật lý
+
+9. Phân biệt OnCollision và OnTriger?
+--> at least 1 phải có rigidbody
+
+10. Corountine? 
+--> hẹn giờ. Delay sự kiện. Nhường quyền cho các function khác
+
+11. Tại sao cần corountine?? keyword `yield`
+--> chia nhỏ logic cho nhiều frame xử lý, thay vì 1 frame phải xử lý các logic khổng lồ. Ứng dụng rộng rãi cho các sự kiện cooling down. Tiết kiệm tài nguyên (thay vì phải check trong Update() liên tục)
+
+
+Tự mò: cách di chuyển Character Controller, RigidBody.AddForce
+
+BTVN: điều khiển camera cho góc nhìn thứ 1 và 3 (xoay trên dưới trái phải) _ Camera Controller, làm bài có sử dụng corountine. Làm game Parkour 3D
+
+1. file text câu hỏi + code
+2. video camera, mini game 
+
+
+
+===== CAMERA CONTROLLER =======
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class CameraController : MonoBehaviour
+{
+    public enum CameraMode { FirstPerson, ThirdPerson }
+    public CameraMode mode = CameraMode.FirstPerson;
+
+    [Header("General Settings")]
+    public Transform target;
+    public float mouseSensitivity = 10f;
+    public Vector2 pitchMinMax = new Vector2(-40f, 85f);
+    public Vector2 yawMinMax = new Vector2(-60f, 60f);
+
+    [Header("Third Person Settings")]
+    public float distanceFromTarget = 5f;
+    private float yaw;
+    private float pitch;
+
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    void LateUpdate()
+    {
+        if (target == null) return;
+
+        if (Mouse.current != null) //some device dont have mouse
+        {
+            Vector2 mouseDelata = Mouse.current.delta.ReadValue();
+
+            yaw += mouseDelata.x * mouseSensitivity * Time.deltaTime;
+            pitch += mouseDelata.y * mouseSensitivity * Time.deltaTime;
+        }
+
+        pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);  //(value, min, max)
+        yaw = Mathf.Clamp(yaw, yawMinMax.x, yawMinMax.y);
+
+        if (mode == CameraMode.FirstPerson)
+        {
+            HandleFirstPerson();
+        }
+        else
+        {
+            HandleThirdPerson();
+        }
+    }
+
+    void HandleFirstPerson()
+    {
+        transform.position = target.position + Vector3.up * 1f;
+        transform.eulerAngles = new Vector3(pitch, yaw, 0);
+        // Debug.Log($"camera {transform.position}");
+
+    }
+
+    void HandleThirdPerson()
+    {
+        transform.eulerAngles = new Vector3(pitch, yaw, 0f);
+        transform.position = target.position - transform.forward * distanceFromTarget + Vector3.up * 1.5f;
+        // Debug.Log($"camera {transform.position}");
+    }
+}
+
+
+
+
+======= COROUTINE =======
+using UnityEngine;
+using System.Collections;
+
+public class WinController : MonoBehaviour
+{
+    private bool hasWon = false;
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            hasWon = true;
+            Debug.Log("You won! Couting 3s down to exit ...");
+            StartCoroutine(WinRoutine());
+        }
+    }
+
+    private IEnumerator WinRoutine()
+    {
+        yield return new WaitForSeconds(3);
+        Debug.Log("Exiting ...");
+
+    }
+}
+
+
+
+
+
+
+
+

@@ -12,10 +12,10 @@ EditorBuildSettings:
     path: Assets/Scenes/Main.unity
     guid: a6247df9099b66f44a9c13bed17dab62
   - enabled: 1
-    path: Assets/Scenes/ugly_enemy.unity
+    path: Assets/Scenes/map_forest.unity
     guid: 9eae27a72e659fd4e8539b2c7f1c8f04
   - enabled: 1
-    path: Assets/Scenes/level3.unity
+    path: Assets/Scenes/map_snow.unity
     guid: 9c654767ee1070341b1eff9c7db68283
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

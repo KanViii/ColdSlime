@@ -1,0 +1,8 @@
+- Terrain: tools tạo map 
+- Nav mesh: static (bake 1 lần), dynamic (dùng cho map to nhằm tối ưu hiệu năng)
+- Các thành phần:
+	 Agent - dùng cho các đối tượng đi trên NavMesh --> khiến 1 GameObj tương tác với NavMesh.
+	Surface 
+	Modifier - đánh dấu cho GameObj đi được hay không
+	Link - nối 2 GameObj
+	Optical - static - đục lỗ trên NavMesh :)))) ==> enemy di chuyển thì vùng đó bị đục lỗ 
