@@ -15,5 +15,5 @@ MonoBehaviour:
   _unitName: Player
   _maxHealth: 200
   _moveSpeed: 15
-  _attackDamage: 20
+  _attackDamage: 25
   modelPrefab: {fileID: 0}

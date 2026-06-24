@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.AI;
 using System;
 
 public class Player : UnitBase
@@ -12,7 +13,9 @@ public class Player : UnitBase
 
     public AudioClip audioDie;
     public AudioClip audioWin;
+    public AudioClip audioAttack;
     public GameObject hitPrefab; 
+    public GameObject bubblePrefab;
 
     public static Player Instance { get; private set; }
 
@@ -28,25 +31,7 @@ public class Player : UnitBase
         Instance = this;
     }
 
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
 
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        GameObject spawnPoint = GameObject.Find("SpawnPoint");
-        if (spawnPoint != null)
-        {
-            transform.position = spawnPoint.transform.position;
-            transform.rotation = spawnPoint.transform.rotation;
-        }
-    }
     public float attackRange = 2f; 
 
     void Update()
@@ -85,7 +70,31 @@ public class Player : UnitBase
         
         Vector3 movement = new Vector3(moveX, 0, moveZ).normalized;
 
-        transform.Translate(movement * myStats.moveSpeed * Time.deltaTime, Space.Self);
+        // Chuyển hướng di chuyển từ Local sang World Space
+        Vector3 worldDisplacement = transform.TransformDirection(movement) * myStats.moveSpeed * Time.deltaTime;
+
+        // Dùng Rigidbody để di chuyển nếu có, giúp mượt mà và tự trượt trên vách núi
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.MovePosition(transform.position + worldDisplacement);
+        }
+        else
+        {
+            // Nếu không có Rigidbody thì dùng NavMesh Raycast để chặn không cho đi ra ngoài NavMesh
+            Vector3 targetPosition = transform.position + worldDisplacement;
+            UnityEngine.AI.NavMeshHit hit;
+            if (UnityEngine.AI.NavMesh.Raycast(transform.position, targetPosition, out hit, UnityEngine.AI.NavMesh.AllAreas))
+            {
+                // Bị chặn bởi mép NavMesh
+                transform.position = hit.position;
+            }
+            else
+            {
+                // Đi bình thường
+                transform.position = targetPosition;
+            }
+        }
     }
 
     public override void TakeDamage(float damage)
@@ -114,25 +123,33 @@ public class Player : UnitBase
 
         if (attack)
         {
-            // GameObject attackEffect = Instantiate(attackPrefab, this.transform.position, Quaternion.identity);
-            // Destroy(attackEffect, 0.2f);
-        Debug.Log("Player Attack!");
-        AttackEnemiesNearby();
-    }
+            if (audioAttack != null)
+            {
+                AudioSource.PlayClipAtPoint(audioAttack, transform.position);
+            }
+            Debug.Log("Player shoots bubble!");
+            ShootBubble();
+        }
     }
 
-    void AttackEnemiesNearby()
+    void ShootBubble()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange);
-        
-        foreach (Collider hit in hitColliders)
+        if (bubblePrefab != null)
         {
-            Enemy enemy = hit.GetComponent<Enemy>();
+            // Spawn bubble ở vị trí ngang hông của Player (cao lên 0.5f để ngang tầm bọn slime)
+            Vector3 spawnPos = transform.position + transform.forward * 0.5f + Vector3.up * 0.1f;
+            GameObject bubble = Instantiate(bubblePrefab, spawnPos, transform.rotation);
             
-            if (enemy != null) 
+            // Lấy script PlayerBubble (nếu prefab chưa gắn thì tự động AddComponent)
+            PlayerBubble bubbleScript = bubble.GetComponent<PlayerBubble>();
+            if (bubbleScript == null) 
             {
-                enemy.TakeDamage(myStats.attackDamage);
+                bubbleScript = bubble.AddComponent<PlayerBubble>();
             }
+            
+            // Truyền thông số từ Player sang viên đạn
+            bubbleScript.damage = myStats.attackDamage;
+            bubbleScript.maxDistance = attackRange;
         }
     }
 
@@ -143,9 +160,30 @@ public class Player : UnitBase
             AudioSource.PlayClipAtPoint(audioDie, transform.position);
         }
         
-        base.Die();
         Debug.Log("--- GAME OVER! LOSER ^^ ---");
 
         OnPlayerDied?.Invoke();
+
+        // Stop the player from moving/acting
+        this.enabled = false;
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        StartCoroutine(LoadMainSceneAfterDelay(2f));
+    }
+
+    private System.Collections.IEnumerator LoadMainSceneAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene("Main");
+    }
+
+    public void PlayWinSound()
+    {
+        if (audioWin != null)
+        {
+            AudioSource.PlayClipAtPoint(audioWin, transform.position);
+            Debug.Log("Player Wins Level!");
+        }
     }
 }

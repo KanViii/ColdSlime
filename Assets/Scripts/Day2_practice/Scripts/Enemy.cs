@@ -75,11 +75,11 @@ public class Enemy : UnitBase
             Vector3 direction = (Player.Instance.transform.position - transform.position).normalized;
             direction.y = 0;
 
-            transform.Translate(-direction * myStats.moveSpeed * Time.deltaTime, Space.World);
+            transform.Translate(direction * myStats.moveSpeed * Time.deltaTime, Space.World);
 
             if (direction != Vector3.zero)
             {
-                transform.forward = -direction;
+                transform.forward = direction;
             }
         }
         HandleAttack();

@@ -12,11 +12,17 @@ public class PlayManager : MonoBehaviour
 
     private bool isPaused = false;
     private PauseManager uiPause; 
+    private int currentScore = 0;
+    public int CurrentScore => currentScore;
 
     void Start()
     {
         InitButtonEvents();
-        UpdateScoreUI();
+
+        GameSaveData data = SaveSystem.LoadFromJson(1, 0, 0);
+        currentScore = data.score;
+        UpdateScoreUI(currentScore);
+
         UpdateLevelUI();
 
         // Setup giá trị HP Slider ban đầu
@@ -29,18 +35,14 @@ public class PlayManager : MonoBehaviour
 
     private void OnEnable()
     {
-        Enemy.OnAnyEnemyDied += HandleEnemyDied;
-        Player.OnPlayerHealthChanged += UpdateHPSliderUI; // Lắng nghe sự kiện đổi máu
+        Day8.Monster.OnAnyMonsterDied += HandleMonsterDied;
         LevelManager.OnLevelChanged += HandleLevelChanged; // Lắng nghe sự kiện chuyển Level
-        LevelManager.OnScoreChanged += UpdateScoreUI; // Lắng nghe sự thay đổi điểm
     }
 
     private void OnDisable()
     {
-        Enemy.OnAnyEnemyDied -= HandleEnemyDied;
-        Player.OnPlayerHealthChanged -= UpdateHPSliderUI;
+        Day8.Monster.OnAnyMonsterDied -= HandleMonsterDied;
         LevelManager.OnLevelChanged -= HandleLevelChanged;
-        LevelManager.OnScoreChanged -= UpdateScoreUI;
     }
 
     private void HandleLevelChanged(int newLevel)
@@ -57,12 +59,10 @@ public class PlayManager : MonoBehaviour
         }
     }
 
-    private void HandleEnemyDied(Enemy enemyKilled)
+    private void HandleMonsterDied(Day8.Monster monsterKilled)
     {
-        if (LevelManager.Instance != null)
-        {
-            LevelManager.Instance.AddScore(1);
-        }
+        currentScore++;
+        UpdateScoreUI(currentScore);
     }
 
     private void UpdateScoreUI(int currentScore)
@@ -75,16 +75,29 @@ public class PlayManager : MonoBehaviour
 
     private void UpdateScoreUI()
     {
-        if (LevelManager.Instance != null)
-        {
-            UpdateScoreUI(LevelManager.Instance.CurrentScore);
-        }
+        UpdateScoreUI(currentScore);
     }
 
-    // Hàm cập nhật Level UI
+    public void ResetScore()
+    {
+        currentScore = 0;
+        UpdateScoreUI(currentScore);
+    }
+
     public void UpdateLevelUI()
     {
-        if (levelText != null && LevelManager.Instance != null && LevelManager.Instance.LevelConfigs != null)
+        if (levelText == null) return;
+
+        Day8.MonsterManager monsterManager = Object.FindFirstObjectByType<Day8.MonsterManager>();
+        if (monsterManager != null && monsterManager.LevelData != null)
+        {
+            int currentLevel = monsterManager.CurrentLevel;
+            int maxLevel = monsterManager.LevelData.levels.Count;
+            levelText.text = currentLevel + "/" + maxLevel;
+            return;
+        }
+
+        if (LevelManager.Instance != null && LevelManager.Instance.LevelConfigs != null)
         {
             int currentLevel = LevelManager.Instance.CurrentLevel;
             int maxLevel = LevelManager.Instance.LevelConfigs.Count;
@@ -94,6 +107,13 @@ public class PlayManager : MonoBehaviour
 
     void Update()
     {
+        // Liên tục cập nhật thanh máu theo máu thực tế của Player
+        if (HPSlier != null && Player.Instance != null && Player.Instance.myStats != null)
+        {
+            HPSlier.maxValue = Player.Instance.myStats.maxHealth;
+            HPSlier.value = Player.Instance.CurrentHealth;
+        }
+
         bool pause = false;
         if (InputManager.Instance != null) pause = InputManager.Instance.PauseTriggered;
         else if (Keyboard.current != null) pause = Keyboard.current.escapeKey.wasPressedThisFrame;

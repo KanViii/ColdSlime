@@ -1,5 +1,4 @@
 Level,SceneName,SpawnCount,MonsterPrefabNames
-1,ugly_enemy,1,Enemy
-2,ugly_enemy,5,Enemy2
-3,ugly_enemy,7,Enemy
-4,Level_Scene_Name,5,Enemy
+1,map_snow,3,Enemy
+2,map_snow,5,Enemy2
+3,map_snow,7,Enemy
