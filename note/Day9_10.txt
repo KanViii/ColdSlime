@@ -1,0 +1,13 @@
+Game Object: Scripts (Component)
+	Component can be MeshRenderer/MeshFilter (.mesh, .asset ==> viết bằng YAML - file local của unity) đôi khi là .fbx là file xuất của 3DSMax, hầu hết các engine đều sử dụng được .fbx.
+		- Mesh Filter: quy định shape
+		- Mesh Renderer: chứa materials (resource container chứa properties)
+
+
+texture như 1 2D array, mỗi đơn vị nhỏ là textxel
+Camera: world space -(chuyển trục)-> view space -(độ lớn nhỏ gần xa)-> clip space, giữ lại trục z (3 chiều) -> screen space (còn 2 trục x, y)
+
+
+
+- Quản lý đa luồng performace mạnh hơn, nhưng hầu hết game hiện tại là xử lý đơn luồng. 
+- Thông thường thì chỉ có 1 hàm Update và 1 hàm CustomeUpdate thôi. 
