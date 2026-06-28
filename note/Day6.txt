@@ -1,0 +1,16 @@
+Làm game hướng đến mobile
+Challenges: hiệu năng, bộ nhớ không bằng PC, khác cấu hình thiết bị, thậm chí là nhiệt độ.
+- Performance optimization: reduce draw calls and overall (vẽ tất cả các mesh 1 lần từ đầu), shaders and materials, object pooling, optimize physics AI, profile on real device
+Memory optimization: compress textures, use Addressables/AssetBundles, Unload used assets, reduce mesh and animation.
+
+- Graphics settings strategy: 
+
+example: UnityEngine.Device.SystemInfo.deviceType != 
+
+
+BUILD PROJECT
+
+- Resources: có nhiu là đem lên bản build nên tiết kiệm, cái nào có trên sence/không xài thì không đem dô
+- Editor: các scripts trong này sẽ bị strip khi build
+- StreamingAssets: chứa các tệp config, media. Các tài nguyên trong này cũng đem dô tải luôn
+- Plugging: chứa thư viện đóng gói (.dll, .so)

@@ -1,0 +1,7 @@
+animation & animator: chuyển động
+particle system: hiệu ứng
+audio source: âm thanh
+demo: tạo âm thanh
+
+
+- Animation: using component Animator

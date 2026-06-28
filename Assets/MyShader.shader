@@ -49,13 +49,9 @@ Shader "Custom/NewUnlitUniversalRenderPipelineShader"
 
             TEXTURE2D(_BaseMap);
             SAMPLER(sampler_BaseMap);
-            // sampler2D _BaseMap;
 
-            // SAMPLER(sampler_BaseMap2);
-
-
-            // float4 _Tilling;  // sampleing state 
-            // float4 _Offset;  // sampleing state 
+            // float4 _Tilling;  // sampling state 
+            // float4 _Offset;  // sampling state 
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor; 

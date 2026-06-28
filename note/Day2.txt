@@ -1,0 +1,16 @@
+Core game playloop (30-60 cycle --> frame)
+
+Script table Object: chứa thông tin cơ bản, không gắn với bất kì Object nào, tồn tại dưới dạng Asset --> giảm bộ nhớ tiêu hao. Chỉ chứa data tĩnh, không thay đổi trong vòng đời game. Có chứa hàm, nhưng mà ít dùng
+
+Loading assets with resource.load: Load prefab 
+
+Renderer component: thể hiện GameObj trên scence, sử dụng Materials(bề mặt, màu sắc) và Meshes (hình dạng) để show. 3 loại: Sprite (2D), Mesh (3D cố định), SkinnedMesd (những mesh có thể bị thay đổi cấu trúc)
+
+*Note: 
+- Avoid Update(): mỗi lần gọi tốn tài nguyên --> cause lag ==> Tự viết update/ sử dụng 1 cái manager
+- Object pooling: reuse object, enable/disable object
+
+
+bt: 
+
+question: 

@@ -5,9 +5,24 @@ Game Object: Scripts (Component)
 
 
 texture như 1 2D array, mỗi đơn vị nhỏ là textxel
-Camera: world space -(chuyển trục)-> view space -(độ lớn nhỏ gần xa)-> clip space, giữ lại trục z (3 chiều) -> screen space (còn 2 trục x, y)
+Camera: Object space (vertex, triangle nối từ các vertex)  --> world space -(chuyển trục)-> view space -(độ lớn nhỏ gần xa)-> clip space, giữ lại trục z (3 chiều) -> screen space (còn 2 trục x, y)
+
+từ vertex sang fragment là nội suy, sample ở bước fragment vì nếu đặt ở vertex chỉ là nội suy màu, vertex nội suy vị trí, không nội suy màu.
+
+Các hàm helper phải được define trước vertex và fragment
+
 
 
 
 - Quản lý đa luồng performace mạnh hơn, nhưng hầu hết game hiện tại là xử lý đơn luồng. 
 - Thông thường thì chỉ có 1 hàm Update và 1 hàm CustomeUpdate thôi. 
+
+
+
+
+BAI TAP: 
+- code ra specular. tọa độ mắt = tọa độ trên mesh - tọa độ camera
+tất cả bề mặt có 2 thành phần: diffuse, specular - phán tán ánh sáng --> độ bóng 
+
+
+
